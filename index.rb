@@ -20,16 +20,21 @@ end
 
 post '/tweets' do
   username = params['username']
-  begin
-    tweets = client.user_timeline(username, count: 200)
-  rescue Twitter::Error::NotFound
-    return "#{username} not found"
-  rescue Twitter::Error::Unauthorized
-    return "#{username} has protected their tweets"
+  if Dir.entries('./data').include? "#{username}.json"
+    tweets = JSON.parse(File.read("./data/#{username}.json"))
+  else
+    begin
+      tweets = client.user_timeline(username, count: 200)
+    rescue Twitter::Error::NotFound
+      return "#{username} not found"
+    rescue Twitter::Error::Unauthorized
+      return "#{username} has protected their tweets"
+    end
+    tweets = tweets.map{|t| t.text}
+    File.write("./data/#{username}.json", JSON.dump(tweets))
   end
 
-  tweetText = tweets.map{|t| t.text}.join(' ')
-  commonWordsArr = extractMostCommonWords(tweetText)
+  commonWordsArr = extractMostCommonWords(tweets.join(' '))
   response = translate(commonWordsArr)
 
   JSON.dump({
