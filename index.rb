@@ -1,11 +1,15 @@
+require "json"
 require "sinatra"
 require "twitter"
-
+require_relative "./lib/watson"
+require_relative "./lib/text_analysis"
+require_relative "./config"
+print $configuration
 client = Twitter::REST::Client.new do |config|
-  config.consumer_key        = "jMLQd1injxviHl9wtYL19tT2f"
-  config.consumer_secret     = "OPcJfrbprNnaiYlQ79rUTOMgDh6k0fcLdur8cMzMl8NzphsZKh"
-  config.access_token        = "1632499316-pWw1g0nJidUCg7vUK7RDix9tCv0cYxsjGfhlEnn"
-  config.access_token_secret = "B4d1LvvBcg4UoFbmOmpW2V672B0VpBQeRjIdC1kG2KP1s"
+  config.consumer_key        = $configuration[:twitter][:consumer_key]
+  config.consumer_secret     = $configuration[:twitter][:consumer_secret]
+  config.access_token        = $configuration[:twitter][:access_token]
+  config.access_token_secret = $configuration[:twitter][:access_token_secret]
 end
 
 set :public_folder, File.dirname(__FILE__) + '/public'
@@ -17,12 +21,19 @@ end
 post '/tweets' do
   username = params['username']
   begin
-    tweets = client.user_timeline(username, count: 50)
+    tweets = client.user_timeline(username, count: 200)
   rescue Twitter::Error::NotFound
     return "#{username} not found"
   rescue Twitter::Error::Unauthorized
     return "#{username} has protected their tweets"
   end
 
-  tweets.map{|t| t.text}
+  tweetText = tweets.map{|t| t.text}.join(' ')
+  commonWordsArr = extractMostCommonWords(tweetText)
+  response = translate(commonWordsArr)
+
+  JSON.dump({
+    'original' => commonWordsArr,
+    'translations' => JSON.parse(response.body)['translations'].map{|t| t['translation']}
+  })
 end
