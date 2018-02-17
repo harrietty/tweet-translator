@@ -1,0 +1,10 @@
+<h2>Translations of your most common words:</h2>
+<div id='translation'>
+<% colors = ['light', 'dark'] %>
+<% @commonWordTranslations[:originals].each.with_index do |word, i| %>
+  <div class='wordsContainer <%= colors[i % 2] %>Row'>
+    <div><%= word %></div>
+    <div><%= @commonWordTranslations[:translations][i] %></div>
+  </div>
+<% end %>
+</div>

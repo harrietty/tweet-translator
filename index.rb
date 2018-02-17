@@ -16,6 +16,7 @@ client = Twitter::REST::Client.new do |config|
 end
 
 set :public_folder, File.dirname(__FILE__) + '/public'
+set :static_cache_control, [:public, max_age: 2]
 
 get '/' do
   File.read(File.join('public', 'index.html'))
@@ -44,8 +45,9 @@ post '/tweets' do
   commonWordsArr = extractMostCommonWords(tweets.join(' '))
   response = translate(commonWordsArr)
 
-  JSON.dump({
-    'original' => commonWordsArr,
-    'translations' => JSON.parse(response.body)['translations'].map{|t| t['translation']}
-  })
+  @commonWordTranslations = {
+    originals: commonWordsArr,
+    translations: JSON.parse(response.body)['translations'].map{|t| t['translation']}
+  }
+  erb :translations
 end

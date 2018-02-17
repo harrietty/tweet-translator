@@ -1,5 +1,5 @@
 body {
-  background-color: lightcoral;
+  background-color: lightyellow;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
@@ -10,4 +10,19 @@ a, a:link, a:visited, a:active {
 
 a:hover {
   background-color: antiquewhite;
+}
+
+.wordsContainer {
+  display: flex;
+  width: 80%;
+  justify-content: space-between;
+  padding: 5px 20px;
+}
+
+.lightRow {
+  background-color: rgba(108, 122, 190, 0.5);
+}
+
+.darkRow {
+  background-color: rgba(142, 0, 150, 0.3);
 }
