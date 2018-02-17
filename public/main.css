@@ -2,3 +2,12 @@ body {
   background-color: lightcoral;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
+
+a, a:link, a:visited, a:active {
+  color: darkslategrey;
+  text-decoration: underline;
+}
+
+a:hover {
+  background-color: antiquewhite;
+}

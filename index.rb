@@ -29,9 +29,11 @@ post '/tweets' do
       tweets = client.user_timeline(username, count: 200)
       puts "Fetching Tweets at #{Time.now}"
     rescue Twitter::Error::NotFound
-      return "#{username} not found"
+      @error = "Twitter user #{username} not found"
+      return erb :problem
     rescue Twitter::Error::Unauthorized
-      return "#{username} has protected their tweets"
+      @error = "Twitter user #{username} has protected their tweets"
+      return erb :problem
     end
     tweets = tweets.map{|t| t.text}
     File.write("./data/#{username}.json", JSON.dump({'tweets' => tweets, 'lastUpdated' => Time.now.to_i}))
